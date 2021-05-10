@@ -4,10 +4,9 @@ Description: 'Static website hosting with S3 and CloudFront'
 Parameters:
   BucketName:
     Type: String
-    Default: 'jfarrellyblogs'
+    Default: 'my-awesome-bucket-name-12345'
 
 Resources:
-  # Create the bucket to contain the website HTML
   S3Bucket:
     Type: 'AWS::S3::Bucket'
     Properties:
@@ -17,7 +16,6 @@ Resources:
         IndexDocument: index.html
         ErrorDocument: error.html
 
-  # Configure the bucket as a CloudFront Origin
   ReadPolicy:
     Type: 'AWS::S3::BucketPolicy'
     Properties:
@@ -31,22 +29,20 @@ Resources:
             Principal:
               AWS: '*'
 
-  # Configure Access to CloudFrount
   CloudFrontOriginIdentity:
     Type: 'AWS::CloudFront::CloudFrontOriginAccessIdentity'
     Properties:
       CloudFrontOriginAccessIdentityConfig:
         Comment: !Ref S3Bucket
 
-  # Configure CloudFront
   CloudFrontDistribution:
     Type: 'AWS::CloudFront::Distribution'
     Properties:
       DistributionConfig:
         CustomErrorResponses:
-          - ErrorCode: 403 # not found
+          - ErrorCode: 403 
             ResponseCode: 404
-            ResponsePagePath: 'index.html'
+            ResponsePagePath: '/index.html'
         DefaultCacheBehavior:
           AllowedMethods:
             - GET
@@ -57,18 +53,18 @@ Resources:
             - HEAD
             - OPTIONS
           Compress: true
-          DefaultTTL: 3600 # in seconds
+          DefaultTTL: 3600 
           ForwardedValues:
             Cookies:
               Forward: none
             QueryString: false
-          MaxTTL: 86400 # in seconds
-          MinTTL: 60 # in seconds
+          MaxTTL: 86400 
+          MinTTL: 60 
           TargetOriginId: s3origin
           ViewerProtocolPolicy: redirect-to-https
         ViewerCertificate:
           CloudFrontDefaultCertificate: 'true'
-        DefaultRootObject: '/index.html'
+        DefaultRootObject: 'index.html'
         Enabled: true
         HttpVersion: http2
         Origins:
@@ -78,7 +74,6 @@ Resources:
               OriginAccessIdentity: !Sub 'origin-access-identity/cloudfront/${CloudFrontOriginIdentity}'
         PriceClass: 'PriceClass_All'
 
-  # Create an IAM user with Access Keys to enable automated deployment of the website to this bucket
   PublishUser:
     Type: 'AWS::IAM::User'
     Properties: 
