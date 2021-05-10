@@ -4,7 +4,7 @@ Description: 'Static website hosting with S3 and CloudFront'
 Parameters:
   BucketName:
     Type: String
-    Default: 'my-awesome-bucket-name-12345'
+    Default: 'my-awesome-new-bucket-name'
 
 Resources:
   S3Bucket:
